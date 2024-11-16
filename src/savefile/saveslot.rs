@@ -150,8 +150,6 @@ impl SaveSlot {
         let mut enemy_walk_direction = [[EnemyDirection::ToNextNode; AMBUSH_ENEMY_COUNT]; WORLD_COUNT];
         let mut player_death_count = [[0u8; STAGE_COUNT]; WORLD_COUNT];
         
-        
-        
         for i in 0..WORLD_COUNT {
             world_unlocked[i] = input[start_offset + 0x32 + i] != 0;
             toad_rescue_level[i] = input[start_offset + 0x742 + i];
@@ -172,12 +170,14 @@ impl SaveSlot {
             }
             
             for j in 0..STAGE_COUNT {
-                let offs = (i * STAGE_COUNT) + j;
+                let offs = (i * STAGE_COUNT + j) * 4;
                 let start = start_offset + 0x6C + offs;
                 let end = start + 4;
                 stage_completion_flags[i][j] = BigEndian::read_u32(&input[start..end]);
+
+                let offs = (i * STAGE_COUNT) + j;
                 player_death_count[i][j] = input[start_offset + 0x7C4 + offs];
-            }    
+            }
         }    
 
         let staff_credits_high_score = BigEndian::read_u16(&input[start_offset + 0x66..start_offset + 0x68]);
@@ -289,12 +289,13 @@ impl SaveSlot {
             }
 
             for j in 0..STAGE_COUNT {
-                let offs = (i * STAGE_COUNT) + j;
+                let offs = (i * STAGE_COUNT + j) * 4;
                 BigEndian::write_u32(
                     &mut out[0x6C + offs..0x6C + offs + 4],
                     self.stage_completion_flags[i][j]
                 );
 
+                let offs = (i * STAGE_COUNT) + j;
                 out[0x7C4 + offs] = self.player_death_count[i][j];
             }
         }

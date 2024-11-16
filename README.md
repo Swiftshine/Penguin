@@ -2,5 +2,6 @@
 Work-in-progress New Super Mario Bros. Wii save editor.
 
 ## Todo
-- [ ] Accurately read files
-- [ ] Accurately save files
+- [X] Accurately read files
+- [X] Accurately save files
+- [ ] GUI
