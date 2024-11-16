@@ -273,12 +273,14 @@ impl SaveSlot {
             };
 
             out[0x32 + i] = if self.world_unlocked[i] { 1 } else { 0 };
+            out[0x742 + i] = self.toad_rescue_level[i];
 
             for j in 0..AMBUSH_ENEMY_COUNT {
                 let offs = (i * AMBUSH_ENEMY_COUNT) + j;
 
                 out[0x3C + offs] = self.enemy_revival_count[i][j];
                 out[0x74C + offs] = self.enemy_subworld[i][j];
+                out[0x774 + offs] = self.enemy_pos_index[i][j];
                 out[0x79C + offs] = match self.enemy_walk_direction[i][j] {
                     EnemyDirection::ToNextNode => 0,
                     EnemyDirection::ToPreviousNode => 1,
