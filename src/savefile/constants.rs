@@ -43,7 +43,7 @@ pub const AMBUSH_ENEMY_COUNT: usize = 4;
 
 // there are 64 hint movies, but 70 is the constant
 pub const HINT_MOVIE_COUNT: usize = 70;
-pub const ACTUAL_HINT_MOVIE_COUNT: usize = 64;
+pub const _ACTUAL_HINT_MOVIE_COUNT: usize = 64;
 
 #[derive(Copy, Clone)]
 pub enum StartingMushroomKind {

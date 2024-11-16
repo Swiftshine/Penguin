@@ -1,6 +1,7 @@
 use byteorder::{BigEndian, ByteOrder};
 
 use crate::savefile::constants::*;
+use crc32fast as crc32;
 
 const SAVE_SLOT_SIZE: usize = 0x980;
 
@@ -255,6 +256,99 @@ impl SaveSlot {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        todo!()
+        let mut out = vec![0u8; SAVE_SLOT_SIZE];
+        
+        // version
+        out[0] = 0xE;
+
+        out[2] = self.game_completion_flags;
+        out[3] = self.cur_world;
+        out[4] = self.cur_subworld;
+        out[5] = self.cur_path_node;
+        out[6] = self.w5_vine_reshuffle_counter;
+        out[7] = if self.w3_switch_on { 1 } else { 0 };
+
+        for i in 0..POWERUP_COUNT {
+            out[9 + i] = self.item_stock[i];
+        }
+
+        
+        for i in 0..PLAYER_COUNT {
+            out[0x1A + i] = self.player_continues[i];
+            out[0x1E + i] = self.player_coins[i];
+            out[0x22 + i] = self.player_lives[i];
+            out[0x26 + i] = self.player_spawn_flags[i];
+            
+            out[0x2A + i] = match self.player_character[i] {
+                PlayerCharacter::Mario => 0,
+                PlayerCharacter::Luigi => 1,
+                PlayerCharacter::BlueToad => 2,
+                PlayerCharacter::YellowToad => 3,
+            };
+
+            out[0x2E + i] = match self.player_powerup[i] {
+                PlayerPowerup::None => 0,
+                PlayerPowerup::Mushroom => 1,
+                PlayerPowerup::FireFlower => 2,
+                PlayerPowerup::MiniMushroom => 3,
+                PlayerPowerup::PropellerMushroom => 4,
+                PlayerPowerup::PenguinSuit => 5,
+                PlayerPowerup::IceFlower => 6,
+            };
+        }
+        
+        for i in 0..WORLD_COUNT {
+            out[0x10 + i] = match self.starting_mushroom_house_type[i] {
+                StartingMushroomKind::None => 0,
+                StartingMushroomKind::Star => 1,
+                StartingMushroomKind::Item => 2,
+                StartingMushroomKind::OneUp => 3,
+                StartingMushroomKind::StarRescue => 4,
+                StartingMushroomKind::ItemRescue => 5,
+                StartingMushroomKind::OneUpRescue => 6,
+            };
+
+            out[0x32 + i] = if self.world_unlocked[i] { 1 } else { 0 };
+
+            for j in 0..AMBUSH_ENEMY_COUNT {
+                let offs = (i * AMBUSH_ENEMY_COUNT) + j;
+
+                out[0x3C + offs] = self.enemy_revival_count[i][j];
+                out[0x74C + offs] = self.enemy_subworld[i][j];
+                out[0x79C + offs] = match self.enemy_walk_direction[i][j] {
+                    EnemyDirection::ToNextNode => 0,
+                    EnemyDirection::ToPreviousNode => 1,
+                    EnemyDirection::FirstTimeValue => 2,
+                };
+            }
+
+            for j in 0..STAGE_COUNT {
+                let offs = (i * STAGE_COUNT) + j;
+                BigEndian::write_u32(
+                    &mut out[0x6C + offs..0x6C + offs + 4],
+                    self.stage_completion_flags[i][j]
+                );
+
+                out[0x7C4 + offs] = self.player_death_count[i][j];
+            }
+        }
+        
+        BigEndian::write_u16(&mut out[0x66..0x68], self.staff_credits_high_score);
+        BigEndian::write_u32(&mut out[0x68..0x6C], self.ingame_score);
+        
+        for i in 0..HINT_MOVIE_COUNT {
+            out[0x6FC + i] = if self.hint_movie_bought[i] { 1 } else { 0 };
+        }
+        
+        out[0x968] = self.player_death_count_w3_l4_switch;
+
+        let crc = crc32::hash(&out[..SAVE_SLOT_SIZE - 4]);
+        
+        BigEndian::write_u32(
+            &mut out[0x97C..],
+            crc
+        );
+
+        out
     }
 }
