@@ -98,48 +98,34 @@ impl SaveSlot {
                 _ => StartingMushroomKind::None
             };
         }
-
-        let mut player_continues = [0u8; PLAYER_COUNT];
-        for i in 0..PLAYER_COUNT {
-            player_continues[i] = input[start_offset + 0x1A + i];
-        }
-
-        let mut player_coins = [0u8; PLAYER_COUNT];
-        for i in 0..PLAYER_COUNT {
-            player_coins[i] = input[start_offset + 0x1E + i];
-        }
-
-        let mut player_lives = [0u8; PLAYER_COUNT];
-        for i in 0..PLAYER_COUNT {
-            player_lives[i] = input[start_offset + 0x22 + i];    
-        }
-
-        let mut player_spawn_flags = [0u8; PLAYER_COUNT];
-        for i in 0..PLAYER_COUNT {
-            player_spawn_flags[i] = input[start_offset + 0x26 + i];
-        }
-
+        
         let mut player_character = [
             PlayerCharacter::Mario,
             PlayerCharacter::Luigi,
             PlayerCharacter::YellowToad,
             PlayerCharacter::BlueToad
         ];
+        let mut player_continues = [0u8; PLAYER_COUNT];
+        let mut player_coins = [0u8; PLAYER_COUNT];
+        let mut player_lives = [0u8; PLAYER_COUNT];
+        let mut player_spawn_flags = [0u8; PLAYER_COUNT];
+        let mut player_powerup = [PlayerPowerup::None; PLAYER_COUNT];
+
 
         for i in 0..PLAYER_COUNT {
+            player_continues[i] = input[start_offset + 0x1A + i];
+            player_coins[i] = input[start_offset + 0x1E + i];
+            player_lives[i] = input[start_offset + 0x22 + i];    
+            player_spawn_flags[i] = input[start_offset + 0x26 + i];
             player_character[i] = match input[start_offset + 0x2A + i] {
                 0 => PlayerCharacter::Mario,
                 1 => PlayerCharacter::Luigi,
                 2 => PlayerCharacter::BlueToad,
                 3 => PlayerCharacter::YellowToad,
-
+                
                 // default to mario
                 _ => PlayerCharacter::Mario,
             };
-        }
-
-        let mut player_powerup = [PlayerPowerup::None; PLAYER_COUNT];
-        for i in 0..PLAYER_COUNT {
             player_powerup[i] = match input[start_offset + 0x2E + i] {
                 0 => PlayerPowerup::None,
                 1 => PlayerPowerup::Mushroom,
@@ -148,79 +134,57 @@ impl SaveSlot {
                 4 => PlayerPowerup::PropellerMushroom,
                 5 => PlayerPowerup::PenguinSuit,
                 6 => PlayerPowerup::IceFlower,
-
+    
                 // default to none
                 _ => PlayerPowerup::None,
             };
         }
 
         let mut world_unlocked = [false; WORLD_COUNT];
+        let mut enemy_revival_count = [[0u8; AMBUSH_ENEMY_COUNT]; WORLD_COUNT];
+        let mut stage_completion_flags = [[0u32; STAGE_COUNT]; WORLD_COUNT];
+        let mut hint_movie_bought = [false; HINT_MOVIE_COUNT];
+        let mut toad_rescue_level = [0u8; WORLD_COUNT];
+        let mut enemy_subworld = [[0u8; AMBUSH_ENEMY_COUNT]; WORLD_COUNT];
+        let mut enemy_pos_index = [[0u8; AMBUSH_ENEMY_COUNT]; WORLD_COUNT];
+        let mut enemy_walk_direction = [[EnemyDirection::ToNextNode; AMBUSH_ENEMY_COUNT]; WORLD_COUNT];
+        let mut player_death_count = [[0u8; STAGE_COUNT]; WORLD_COUNT];
+        
+        
+        
         for i in 0..WORLD_COUNT {
             world_unlocked[i] = input[start_offset + 0x32 + i] != 0;
-        }
-
-        let mut enemy_revival_count = [[0u8; AMBUSH_ENEMY_COUNT]; WORLD_COUNT];
-        for i in 0..WORLD_COUNT {
-            for j in 0..AMBUSH_ENEMY_COUNT {
-                enemy_revival_count[i][j] = input[start_offset + 0x3C + (i * AMBUSH_ENEMY_COUNT) + j];
-            }
-        }
-
-        let staff_credits_high_score = BigEndian::read_u16(&input[start_offset + 0x66..start_offset + 0x68]);
-        let ingame_score = BigEndian::read_u32(&input[start_offset + 0x68..start_offset + 0x6C]);
-        
-        let mut stage_completion_flags = [[0u32; STAGE_COUNT]; WORLD_COUNT];
-        for i in 0..WORLD_COUNT {
-            for j in 0..STAGE_COUNT {
-                let start = start_offset + 0x6C + (i * STAGE_COUNT) + j;
-                let end = start + 4;
-                stage_completion_flags[i][j] = BigEndian::read_u32(&input[start..end]);
-            }
-        }
-
-        let mut hint_movie_bought = [false; HINT_MOVIE_COUNT];
-        for i in 0..HINT_MOVIE_COUNT {
-            hint_movie_bought[i] = input[start_offset + 0x6FC + i] != 0;
-        }
-
-        let mut toad_rescue_level = [0u8; WORLD_COUNT];
-        for i in 0..WORLD_COUNT {
             toad_rescue_level[i] = input[start_offset + 0x742 + i];
-        }
-
-        let mut enemy_subworld = [[0u8; AMBUSH_ENEMY_COUNT]; WORLD_COUNT];
-        for i in 0..WORLD_COUNT {
+            
             for j in 0..AMBUSH_ENEMY_COUNT {
-                enemy_subworld[i][j] = input[start_offset + 0x74C + (i * AMBUSH_ENEMY_COUNT) + j];
-            }
-        }
-
-        let mut enemy_pos_index = [[0u8; AMBUSH_ENEMY_COUNT]; WORLD_COUNT];
-        for i in 0..WORLD_COUNT {
-            for j in 0..AMBUSH_ENEMY_COUNT {
-                enemy_pos_index[i][j] = input[start_offset + 0x774 + (i * AMBUSH_ENEMY_COUNT) + j];
-            }
-        }
-
-        let mut enemy_walk_direction = [[EnemyDirection::ToNextNode; AMBUSH_ENEMY_COUNT]; WORLD_COUNT];
-        for i in 0..WORLD_COUNT {
-            for j in 0..AMBUSH_ENEMY_COUNT {
-                enemy_walk_direction[i][j] = match input[start_offset + 0x79C + (i * AMBUSH_ENEMY_COUNT) + j] {
+                let offs = (i * AMBUSH_ENEMY_COUNT) + j;
+                enemy_revival_count[i][j] = input[start_offset + 0x3C + offs];
+                enemy_subworld[i][j] = input[start_offset + 0x74C + offs];
+                enemy_pos_index[i][j] = input[start_offset + 0x774 + offs];
+                enemy_walk_direction[i][j] = match input[start_offset + 0x79C + offs] {
                     0 => EnemyDirection::ToNextNode,
                     1 => EnemyDirection::ToPreviousNode,
                     2 => EnemyDirection::FirstTimeValue,
-
+        
                     // default to next node
                     _ => EnemyDirection::ToNextNode,
                 };
             }
-        }
-
-        let mut player_death_count = [[0u8; STAGE_COUNT]; WORLD_COUNT];
-        for i in 0..WORLD_COUNT {
+            
             for j in 0..STAGE_COUNT {
-                player_death_count[i][j] = input[start_offset + 0x7C4 + (i * STAGE_COUNT) + j];
-            }
+                let offs = (i * STAGE_COUNT) + j;
+                let start = start_offset + 0x6C + offs;
+                let end = start + 4;
+                stage_completion_flags[i][j] = BigEndian::read_u32(&input[start..end]);
+                player_death_count[i][j] = input[start_offset + 0x7C4 + offs];
+            }    
+        }    
+
+        let staff_credits_high_score = BigEndian::read_u16(&input[start_offset + 0x66..start_offset + 0x68]);
+        let ingame_score = BigEndian::read_u32(&input[start_offset + 0x68..start_offset + 0x6C]);
+        
+        for i in 0..HINT_MOVIE_COUNT {
+            hint_movie_bought[i] = input[start_offset + 0x6FC + i] != 0;
         }
 
         let player_death_count_w3_l4_switch = input[start_offset + 0x968];
@@ -343,7 +307,7 @@ impl SaveSlot {
         out[0x968] = self.player_death_count_w3_l4_switch;
 
         let crc = crc32::hash(&out[..SAVE_SLOT_SIZE - 4]);
-        
+
         BigEndian::write_u32(
             &mut out[0x97C..],
             crc
