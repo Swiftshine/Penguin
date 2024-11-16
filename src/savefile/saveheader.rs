@@ -23,7 +23,7 @@ impl SaveHeader {
     }
 
     pub fn from_bytes(input: &[u8]) -> Self {
-        let region = match &input[4] {
+        let region = match &input[3] {
             b'E' => SaveFileRegion::NTSC,
             b'P' => SaveFileRegion::PAL,
             b'J' => SaveFileRegion::JPN,
@@ -125,8 +125,8 @@ impl SaveHeader {
             self.extra_modes_unlocked_worlds
         );
 
-        // crc32
-        let crc = crc32::hash(&out[..0x69C]);
+        // crc32 is calculated excluding the magic
+        let crc = crc32::hash(&out[4..0x69C]);
 
         BigEndian::write_u32(
             &mut out[0x69C..0x6A0],
