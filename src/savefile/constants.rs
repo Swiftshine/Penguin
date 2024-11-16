@@ -1,5 +1,7 @@
 use bitflags::bitflags;
 
+pub const HEADER_SIZE: usize = 0x6A0;
+
 #[derive(Copy, Clone)]
 pub enum PlayerPowerup {
     None,
@@ -50,8 +52,15 @@ pub enum StartingMushroomKind {
     Item,
     OneUp,
     StarRescue,
-    RedRescue,
-    GreenRescue,
+    ItemRescue,
+    OneUpRescue,
+}
+
+#[derive(Copy, Clone)]
+pub enum EnemyDirection {
+    ToNextNode, // "forwards" to the next node
+    ToPreviousNode, // "backwards" to the previous node
+    FirstTimeValue, // the initial value that was set prior to entering the world for the first time
 }
 
 bitflags!{

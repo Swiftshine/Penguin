@@ -3,8 +3,6 @@ use crc32fast as crc32;
 
 use crate::savefile::constants::*;
 
-pub const HEADER_SIZE: usize = 0x6A0;
-
 pub struct SaveHeader {
     region: SaveFileRegion,
     last_selected_index: u8,
