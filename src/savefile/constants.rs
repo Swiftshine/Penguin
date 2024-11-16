@@ -1,6 +1,7 @@
 use bitflags::bitflags;
 
 pub const HEADER_SIZE: usize = 0x6A0;
+pub const SAVE_FILE_SIZE: usize = 0x3FA0;
 
 #[derive(Copy, Clone)]
 pub enum PlayerPowerup {

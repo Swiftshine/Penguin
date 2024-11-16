@@ -3,6 +3,7 @@ use egui::Button;
 use std::path::PathBuf;
 use std::env;
 use rfd;
+use std::fs;
 
 use crate::savefile::SaveFile;
 
@@ -46,7 +47,7 @@ impl PenguinApp {
         let path = rfd::FileDialog::new()
             .add_filter("New Super Mario Bros. Wii save file", &["sav"])
             .pick_file();
-
+        
         match path {
             Some(p) => {
                 self.file_path = p;
@@ -68,8 +69,29 @@ impl PenguinApp {
         }
     }
 
-    fn try_save(&self, _save_as: bool) {
-        todo!()
+    fn try_save(&self, save_as: bool) {
+        let path = if !save_as {
+            self.file_path.clone()
+        } else {
+            match rfd::FileDialog::new()
+                .add_filter("New Super Mario Bros. Wii save file", &["sav"])
+                .save_file()
+            {
+                Some(p) => p,
+                None => {
+                    todo!()
+                }
+            }
+        };
+
+        // save file
+
+        match fs::write(&path, &self.file.to_bytes()) {
+            Ok(_) => {},
+            Err(_e) => {
+                todo!()
+            }
+        }
     }
 }
 

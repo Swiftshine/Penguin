@@ -5,19 +5,20 @@ use std::fs;
 mod saveheader;
 mod saveslot;
 mod constants;
+use constants::SAVE_FILE_SIZE;
 use saveheader::SaveHeader;
 use saveslot::SaveSlot;
 
 pub struct SaveFile {
-    _header: SaveHeader,
-    _save_slots: [SaveSlot; 6],
+    header: SaveHeader,
+    save_slots: [SaveSlot; 6],
 }
 
 impl SaveFile {
     pub fn blank() -> Self {
         Self {
-            _header: SaveHeader::blank(),
-            _save_slots: [
+            header: SaveHeader::blank(),
+            save_slots: [
                 SaveSlot::blank(),
                 SaveSlot::blank(),
                 SaveSlot::blank(),
@@ -56,8 +57,21 @@ impl SaveFile {
         ];
 
         Some(Self {
-            _header: header,
-            _save_slots: save_slots
+            header,
+            save_slots
         })
+    }
+
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut out = vec![0u8; SAVE_FILE_SIZE];
+        out.extend_from_slice(&self.header.to_bytes());
+
+        for slot in self.save_slots.iter() {
+            out.extend_from_slice(&slot.to_bytes());
+        }
+
+        assert_eq!(out.capacity(), SAVE_FILE_SIZE);
+        
+        out
     }
 }
