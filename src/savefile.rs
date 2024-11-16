@@ -5,7 +5,6 @@ use std::fs;
 mod saveheader;
 mod saveslot;
 mod constants;
-use constants::SAVE_FILE_SIZE;
 use saveheader::SaveHeader;
 use saveslot::SaveSlot;
 
@@ -63,15 +62,13 @@ impl SaveFile {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut out = vec![0u8; SAVE_FILE_SIZE];
-        out.extend_from_slice(&self.header.to_bytes());
+        let mut out = Vec::new();
+        out.append(&mut self.header.to_bytes());
 
         for slot in self.save_slots.iter() {
-            out.extend_from_slice(&slot.to_bytes());
+            out.append(&mut slot.to_bytes());
         }
 
-        assert_eq!(out.capacity(), SAVE_FILE_SIZE);
-        
         out
     }
 }

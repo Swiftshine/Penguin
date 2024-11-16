@@ -13,7 +13,13 @@ pub struct SaveHeader {
 
 impl SaveHeader {
     pub fn blank() -> Self {
-        todo!()
+        Self {
+            region: SaveFileRegion::NTSC,
+            last_selected_index: 0,
+            free_mode_play_count: [[0; STAGE_COUNT]; WORLD_COUNT],
+            coin_battle_play_count: [[0; STAGE_COUNT]; WORLD_COUNT],
+            extra_modes_unlocked_worlds: 0
+        }
     }
 
     pub fn from_bytes(input: &[u8]) -> Self {
@@ -66,20 +72,20 @@ impl SaveHeader {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut out = vec![0; HEADER_SIZE];
+        let mut out = [0u8; HEADER_SIZE];
         
         // magic
-        out.extend_from_slice(b"SMN");
-        out.push(
-            match self.region {
-                SaveFileRegion::NTSC => b'E',
-                SaveFileRegion::PAL  => b'P',
-                SaveFileRegion::JPN  => b'J',
-                SaveFileRegion::KOR  => b'K',
-                SaveFileRegion::CHN  => b'C',
-                SaveFileRegion::TW   => b'W'
-            }
-        );
+        out[0] = b'S';
+        out[1] = b'M';
+        out[2] = b'N';
+        out[3] = match self.region {
+            SaveFileRegion::NTSC => b'E',
+            SaveFileRegion::PAL  => b'P',
+            SaveFileRegion::JPN  => b'J',
+            SaveFileRegion::KOR  => b'K',
+            SaveFileRegion::CHN  => b'C',
+            SaveFileRegion::TW   => b'W'
+        };
 
         // version - 0x0E00.
         out[0x4] = 0xE;
@@ -127,6 +133,6 @@ impl SaveHeader {
             crc
         );
 
-        out
+        out.to_vec()
     }
 }

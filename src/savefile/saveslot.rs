@@ -220,7 +220,7 @@ impl SaveSlot {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut out = vec![0u8; SAVE_SLOT_SIZE];
+        let mut out = [0u8; SAVE_SLOT_SIZE];
         
         // version
         out[0] = 0xE;
@@ -315,6 +315,6 @@ impl SaveSlot {
             crc
         );
 
-        out
+        out.to_vec()
     }
 }
