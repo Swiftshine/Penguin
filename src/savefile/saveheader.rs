@@ -1,7 +1,9 @@
 use byteorder::{ByteOrder, BigEndian};
+use crc32fast as crc32;
 
 const STAGE_COUNT: usize = 42;
 const WORLD_COUNT: usize = 10;
+const HEADER_SIZE: usize = 0x6A0;
 
 enum SaveFileRegion {
     NTSC,
@@ -13,10 +15,11 @@ enum SaveFileRegion {
 }
 
 pub struct SaveHeader {
-    _region: SaveFileRegion,
-    _last_selected_index: u8,
-    _free_mode_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT],
-    _extra_modes_unlocked_worlds: u16 // flags for each world
+    region: SaveFileRegion,
+    last_selected_index: u8,
+    free_mode_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT],
+    coin_battle_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT],
+    extra_modes_unlocked_worlds: u16, // flags for each world
 }
 
 impl SaveHeader {
@@ -25,7 +28,6 @@ impl SaveHeader {
     }
 
     pub fn from_bytes(input: &[u8]) -> Self {
-
         let region = match &input[4] {
             b'E' => SaveFileRegion::NTSC,
             b'P' => SaveFileRegion::PAL,
@@ -53,22 +55,89 @@ impl SaveHeader {
             }
         }
 
+        let mut coin_battle_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT] = [[0; STAGE_COUNT]; WORLD_COUNT];
+
+        for i in 0..WORLD_COUNT {
+            for j in 0..STAGE_COUNT {
+                coin_battle_play_count[i][j] = BigEndian::read_u16(&input[offs..offs + 2]);
+                offs += 2;
+            }
+        }
+
 
         let extra_modes_unlocked_worlds = BigEndian::read_u16(&input[0x698..0x69A]);
 
         Self {
-            _region: region,
-            _last_selected_index: last_selected_index,
-            _free_mode_play_count: free_mode_play_count,
-            _extra_modes_unlocked_worlds: extra_modes_unlocked_worlds
+            region,
+            last_selected_index,
+            free_mode_play_count,
+            coin_battle_play_count,
+            extra_modes_unlocked_worlds,
         }
     }
 
-    // pub fn to_bytes() -> Vec<u8> {
-    //     todo!()
-    // }
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut out = vec![0; HEADER_SIZE];
+        
+        // magic
+        out.extend_from_slice(b"SMN");
+        out.push(
+            match self.region {
+                SaveFileRegion::NTSC => b'E',
+                SaveFileRegion::PAL  => b'P',
+                SaveFileRegion::JPN  => b'J',
+                SaveFileRegion::KOR  => b'K',
+                SaveFileRegion::CHN  => b'C',
+                SaveFileRegion::TW   => b'W'
+            }
+        );
 
-    // fn calculate_crc32() {
-    //     todo!()
-    // }
+        // version - 0x0E00.
+        out[0x4] = 0xE;
+
+        // last selected save file
+        out[0x6] = self.last_selected_index;
+
+        let mut offs = 8;
+
+        // play count of each level in free for all/free mode
+        for i in 0..WORLD_COUNT {
+            for j in 0..STAGE_COUNT {
+                BigEndian::write_u16(
+                    &mut out[offs..offs + 2],
+                    self.free_mode_play_count[i][j]
+                );
+
+                offs += 2;
+            }
+        }
+
+        // play count of each level in coin battle
+        for i in 0..WORLD_COUNT {
+            for j in 0..STAGE_COUNT {
+                BigEndian::write_u16(
+                    &mut out[offs..offs + 2],
+                    self.coin_battle_play_count[i][j]
+                );
+
+                offs += 2;
+            }
+        }
+
+        // unlocked worlds flags
+        BigEndian::write_u16(
+            &mut out[0x698..0x69A],
+            self.extra_modes_unlocked_worlds
+        );
+
+        // crc32
+        let crc = crc32::hash(&out[..0x69C]);
+
+        BigEndian::write_u32(
+            &mut out[0x69C..0x6A0],
+            crc
+        );
+
+        out
+    }
 }
