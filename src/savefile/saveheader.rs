@@ -1,18 +1,9 @@
 use byteorder::{ByteOrder, BigEndian};
 use crc32fast as crc32;
 
-const STAGE_COUNT: usize = 42;
-const WORLD_COUNT: usize = 10;
-const HEADER_SIZE: usize = 0x6A0;
+use crate::savefile::constants::*;
 
-enum SaveFileRegion {
-    NTSC,
-    PAL,
-    JPN,
-    KOR,
-    CHN,
-    TW
-}
+pub const HEADER_SIZE: usize = 0x6A0;
 
 pub struct SaveHeader {
     region: SaveFileRegion,

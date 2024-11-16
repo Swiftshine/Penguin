@@ -2183,6 +2183,7 @@ name = "penguin"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bitflags 2.6.0",
  "byteorder",
  "crc32fast",
  "eframe",

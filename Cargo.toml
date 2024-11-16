@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.93"
+bitflags = "2.6.0"
 byteorder = "1.5.0"
 crc32fast = "1.4.2"
 eframe = "0.29.1"

@@ -4,9 +4,9 @@ use std::fs;
 
 mod saveheader;
 mod saveslot;
+mod constants;
 use saveheader::SaveHeader;
 use saveslot::SaveSlot;
-
 
 pub struct SaveFile {
     _header: SaveHeader,
