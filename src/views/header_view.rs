@@ -31,10 +31,10 @@ impl HeaderView {
             });
 
         egui::ComboBox::from_label("Last played save slot")
-            .selected_text(String::from("Slot ") + (header.last_selected_index + 1).to_string().as_str())
+            .selected_text(String::from("Slot ") + &format!("{}", header.last_selected_index + 1))
             .show_ui(ui, |ui| {
                 for i in 0..=2 {
-                    let text = String::from("Slot") + &(i + 1).to_string();
+                    let text = String::from("Slot") + &format!("{}", i + 1);
                     ui.selectable_value(
                         &mut header.last_selected_index,
                         i,
