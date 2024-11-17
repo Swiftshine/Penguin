@@ -1,5 +1,6 @@
 mod penguin;
 mod savefile;
+mod views;
 
 use penguin::PenguinApp;
 

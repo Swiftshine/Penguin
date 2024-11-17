@@ -2,15 +2,15 @@ use std::path::PathBuf;
 use std::fs;
 
 
-mod saveheader;
-mod saveslot;
-mod constants;
+pub mod saveheader;
+pub mod saveslot;
+pub mod constants;
 use saveheader::SaveHeader;
 use saveslot::SaveSlot;
 
 pub struct SaveFile {
-    header: SaveHeader,
-    save_slots: [SaveSlot; 6],
+    pub header: SaveHeader,
+    pub save_slots: [SaveSlot; 6],
 }
 
 impl SaveFile {

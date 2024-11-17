@@ -4,11 +4,11 @@ use crc32fast as crc32;
 use crate::savefile::constants::*;
 
 pub struct SaveHeader {
-    region: SaveFileRegion,
-    last_selected_index: u8,
-    free_mode_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT],
-    coin_battle_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT],
-    extra_modes_unlocked_worlds: u16, // flags for each world
+    pub region: SaveFileRegion,
+    pub last_selected_index: u8,
+    pub free_mode_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT],
+    pub coin_battle_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT],
+    pub extra_modes_unlocked_worlds: u16, // flags for each world
 }
 
 impl SaveHeader {

@@ -31,6 +31,7 @@ pub const PLAYER_COUNT: usize = 4;
 pub const STAGE_COUNT: usize = 42;
 pub const WORLD_COUNT: usize = 10;
 
+#[derive(PartialEq)]
 pub enum SaveFileRegion {
     NTSC,
     PAL,

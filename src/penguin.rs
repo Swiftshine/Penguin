@@ -4,14 +4,16 @@ use std::path::PathBuf;
 use std::env;
 use rfd;
 use std::fs;
-
 use crate::savefile::SaveFile;
+use crate::views::{PenguinView, header_view::*};
 
 pub struct PenguinApp {
     file_path: PathBuf,
     _settings: PenguinSettings,
     file: SaveFile,
     file_open: bool,
+    current_view: PenguinView,
+    header_view: HeaderView,
 }
 
 #[derive(Default)]
@@ -27,6 +29,8 @@ impl PenguinApp {
             _settings: Default::default(),
             file: SaveFile::blank(),
             file_open: false,
+            current_view: PenguinView::Header,
+            header_view: HeaderView::new()
         }
     }
 
@@ -100,7 +104,7 @@ impl eframe::App for PenguinApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::TopBottomPanel::top("top_panel")
         .show(ctx, |ui| {
-            ui.menu_button("File", |ui| {
+            egui::menu::bar(ui, |ui|{
                 if ui.button("Open").clicked() {
                     self.try_open();
                     ui.close_menu();
@@ -125,7 +129,28 @@ impl eframe::App for PenguinApp {
 
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.label("central panel");
+            if !self.file_open {
+                ui.centered_and_justified(|ui|{
+                    ui.label("Open a file.");
+                });
+            } else {
+                ui.horizontal(|ui|{
+                    ui.selectable_value(&mut self.current_view, PenguinView::Header, "Header");
+                    ui.selectable_value(&mut self.current_view, PenguinView::SaveSlot, "Save Slots");
+                });
+
+                ui.separator();
+                
+                match self.current_view {
+                    PenguinView::Header => self.header_view.ui(ui, &mut self.file.header),
+        
+                    PenguinView::SaveSlot => {
+                        ui.label("(todo)");
+                    }
+                }
+
+            }
         });
+
     }
 }
