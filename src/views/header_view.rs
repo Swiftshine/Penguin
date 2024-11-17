@@ -1,5 +1,5 @@
 use eframe::egui;
-use crate::savefile::{constants::SaveFileRegion, saveheader::SaveHeader};
+use crate::savefile::{constants::{SaveFileRegion, ACTUAL_WORLD_COUNT}, saveheader::SaveHeader};
 
 pub struct HeaderView;
 
@@ -28,8 +28,7 @@ impl HeaderView {
                 ui.selectable_value(&mut header.region, SaveFileRegion::CHN, "China");
                 ui.selectable_value(&mut header.region, SaveFileRegion::TW, "Taiwan");
 
-            }
-        );
+            });
 
         egui::ComboBox::from_label("Last played save slot")
             .selected_text(String::from("Slot ") + (header.last_selected_index + 1).to_string().as_str())
@@ -42,8 +41,28 @@ impl HeaderView {
                         text
                     );
                 }
-            }
-        );
-
+            });
+        
+        // the play counts in the extra modes are omitted for now
+        
+        ui.add_space(3.0);
+        ui.label("Unlocked worlds in extra game modes");
+        egui::Frame::group(&ui.style())
+        .stroke(egui::Stroke::new(1.0, egui::Color32::GRAY))
+        .show(ui, |ui|{
+                egui::ScrollArea::vertical().show(ui, |ui|{
+                    for i in 0..ACTUAL_WORLD_COUNT {
+                        let mut is_checked = (header.extra_modes_unlocked_worlds & (1 << i)) != 0;
+        
+                        if ui.checkbox(&mut is_checked, format!("World {}", i + 1)).changed() {
+                            if is_checked {
+                                header.extra_modes_unlocked_worlds |= 1 << i;
+                            } else {
+                                header.extra_modes_unlocked_worlds &= !(1 << i);
+                            }
+                        }
+                    }
+                });
+            });
     }
 }

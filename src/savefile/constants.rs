@@ -30,6 +30,7 @@ pub const PLAYER_COUNT: usize = 4;
 
 pub const STAGE_COUNT: usize = 42;
 pub const WORLD_COUNT: usize = 10;
+pub const ACTUAL_WORLD_COUNT: usize = 9;
 
 #[derive(PartialEq)]
 pub enum SaveFileRegion {
@@ -86,4 +87,3 @@ bitflags!{
         const RescueToad = 0b00001000;
     }
 }
-
