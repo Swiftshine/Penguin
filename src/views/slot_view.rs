@@ -11,7 +11,7 @@ impl SlotView {
 
     pub fn ui(&mut self, ui: &mut egui::Ui, slot: &mut SaveSlot) {
 
-        // row - game completion, game state
+        // row - game completion, world state
         ui.add_space(3.0);
         ui.label("Game completion");
         ui.horizontal(|ui|{
@@ -57,13 +57,20 @@ impl SlotView {
                 });     
             });
 
-            // game state
+            // world state
             egui::Frame::group(&ui.style())
             .stroke(egui::Stroke::new(1.0, egui::Color32::GRAY))
             .show(ui, |ui|{
                 ui.vertical(|ui|{
-                    ui.label("Game state");
+                    ui.label("World state");
                     ui.checkbox(&mut slot.w3_switch_on, "World 3 switch on?");
+
+                    ui.label("W5 vine reshuffle counter");
+                    ui.add(
+                        egui::DragValue::new(&mut slot.w5_vine_reshuffle_counter)
+                        .speed(1)
+                        .range(0..=255)
+                    );
                 });
             });
         });
