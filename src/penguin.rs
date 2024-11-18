@@ -92,18 +92,27 @@ impl PenguinApp {
                 .save_file()
             {
                 Some(p) => p,
-                None => {}
+                None => PathBuf::default()
             }
         };
 
         // save file
 
-        match fs::write(&path, &self.file.to_bytes()) {
-            Ok(_) => {},
-            Err(_e) => {
-                todo!()
+        match fs::exists(&path) {
+            Ok(b) => {
+                if b {
+                    match fs::write(&path, &self.file.to_bytes()) {
+                        Ok(_) => {},
+                        Err(_e) => {
+                            todo!()
+                        }
+                    }
+                }
             }
+
+            Err(_e) => {}
         }
+
     }
 }
 
