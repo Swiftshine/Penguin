@@ -75,10 +75,7 @@ impl PenguinApp {
                         self.file = f;
                     },
                     
-                    None => {
-                        // tell the user the file was invalid
-                        todo!()
-                    }
+                    None => {}
                 }
             }
 
@@ -95,9 +92,7 @@ impl PenguinApp {
                 .save_file()
             {
                 Some(p) => p,
-                None => {
-                    todo!()
-                }
+                None => {}
             }
         };
 
