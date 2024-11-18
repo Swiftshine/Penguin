@@ -1,4 +1,5 @@
 use bitflags::bitflags;
+use std::convert::TryFrom;
 
 pub const HEADER_SIZE: usize = 0x6A0;
 pub const _SAVE_FILE_SIZE: usize = 0x3FA0;
@@ -48,7 +49,7 @@ pub const AMBUSH_ENEMY_COUNT: usize = 4;
 pub const HINT_MOVIE_COUNT: usize = 70;
 pub const _ACTUAL_HINT_MOVIE_COUNT: usize = 64;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum StartingMushroomKind {
     None,
     Star,
