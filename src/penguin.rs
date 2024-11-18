@@ -5,6 +5,7 @@ use std::env;
 use rfd;
 use std::fs;
 use crate::savefile::SaveFile;
+use crate::views::slot_view::SlotView;
 use crate::views::{PenguinView, header_view::*};
 
 pub struct PenguinApp {
@@ -14,12 +15,22 @@ pub struct PenguinApp {
     file_open: bool,
     current_view: PenguinView,
     header_view: HeaderView,
+    current_slot_index: usize,
+    slot_view: SlotView,
 }
 
 #[derive(Default)]
 /// The settings that are saved to disk.
 struct PenguinSettings {
 
+}
+
+fn get_slot_string(index: usize) -> String {
+    match index {
+        0..=2 => String::from("Save Slot ") + &format!("{}", index + 1),
+        3..=5 => String::from("Quick Slot ") + &format!("{}", index - 2),
+        _ => String::from("error")
+    }
 }
 
 impl PenguinApp {
@@ -30,7 +41,9 @@ impl PenguinApp {
             file: SaveFile::blank(),
             file_open: false,
             current_view: PenguinView::Header,
-            header_view: HeaderView::new()
+            header_view: HeaderView::new(),
+            current_slot_index: 0,
+            slot_view: SlotView::new()
         }
     }
 
@@ -142,10 +155,22 @@ impl eframe::App for PenguinApp {
                 ui.separator();
                 
                 match self.current_view {
-                    PenguinView::Header => self.header_view.ui(ui, &mut self.file.header),
+                    PenguinView::Header => {
+                        self.header_view.ui(ui, &mut self.file.header);
+                    }
         
                     PenguinView::SaveSlot => {
-                        ui.label("(todo)");
+                        egui::ComboBox::from_label("Selected slot")
+                            .selected_text(
+                                get_slot_string(self.current_slot_index)   
+                            )
+                            .show_ui(ui, |ui|{
+                                for i in 0..=5 {
+                                    ui.selectable_value(&mut self.current_slot_index, i, get_slot_string(i));
+                                }
+                            });
+                            
+                        self.slot_view.ui(ui, &mut self.file.save_slots[self.current_slot_index]);
                     }
                 }
 
@@ -153,4 +178,5 @@ impl eframe::App for PenguinApp {
         });
 
     }
+
 }
