@@ -17,6 +17,7 @@ fn get_house_type_string(house_type: StartingMushroomKind) -> String {
         StartingMushroomKind::OneUpRescue => "1-Up (Rescue)",
     }.to_string()
 }
+
 impl SlotView {
     pub fn new() -> Self {
         Self {
@@ -110,14 +111,35 @@ impl SlotView {
                         .selected_text(
                             get_house_type_string(slot.starting_mushroom_house_type[self.world_index_mushroom_house])
                         ).show_ui(ui, |ui|{
+                            for i in 0..=6 {
+                                let val = match i {
+                                    0 => StartingMushroomKind::None,
+                                    1 => StartingMushroomKind::Star,
+                                    2 => StartingMushroomKind::Item,
+                                    3 => StartingMushroomKind::OneUp,
+                                    4 => StartingMushroomKind::StarRescue,
+                                    5 => StartingMushroomKind::ItemRescue,
+                                    6 => StartingMushroomKind::OneUpRescue,
+                                    _ => StartingMushroomKind::None
+                                };
 
+                                ui.selectable_value(
+                                    &mut slot.starting_mushroom_house_type[self.world_index_mushroom_house],
+                                    val,
+                                    get_house_type_string(val)
+                                );
+                            }
                             ui.selectable_value(
                                 &mut slot.starting_mushroom_house_type[self.world_index_mushroom_house],
                                 StartingMushroomKind::None,
                                 "None"
                             );
 
-
+                            ui.selectable_value(
+                                &mut slot.starting_mushroom_house_type[self.world_index_mushroom_house],
+                                StartingMushroomKind::Star,
+                                "Star"
+                            );
                         });
                     });
                 });

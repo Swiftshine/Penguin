@@ -1,5 +1,4 @@
 use bitflags::bitflags;
-use std::convert::TryFrom;
 
 pub const HEADER_SIZE: usize = 0x6A0;
 pub const _SAVE_FILE_SIZE: usize = 0x3FA0;
