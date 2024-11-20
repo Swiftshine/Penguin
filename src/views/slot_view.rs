@@ -29,12 +29,10 @@ impl SlotView {
 
         // row - game completion, world state
         ui.add_space(3.0);
-        ui.label("Game completion");
         ui.horizontal(|ui|{
             // game completion
-            egui::Frame::group(&ui.style())
-            .stroke(egui::Stroke::new(1.0, egui::Color32::GRAY))
-            .show(ui, |ui| {
+
+            ui.group(|ui|{
                 ui.horizontal(|ui| {
                     ui.vertical(|ui| {
                         ui.label("Completion flags");
@@ -74,11 +72,8 @@ impl SlotView {
             });
 
             // world state
-            egui::Frame::group(&ui.style())
-            .stroke(egui::Stroke::new(1.0, egui::Color32::GRAY))
-            .show(ui, |ui|{
+            ui.group(|ui|{
                 ui.vertical(|ui|{
-                    ui.label("World state");
                     // w3 switch
                     ui.checkbox(&mut slot.w3_switch_on, "World 3 switch on?");
 
