@@ -129,17 +129,6 @@ impl SlotView {
                                     get_house_type_string(val)
                                 );
                             }
-                            ui.selectable_value(
-                                &mut slot.starting_mushroom_house_type[self.world_index_mushroom_house],
-                                StartingMushroomKind::None,
-                                "None"
-                            );
-
-                            ui.selectable_value(
-                                &mut slot.starting_mushroom_house_type[self.world_index_mushroom_house],
-                                StartingMushroomKind::Star,
-                                "Star"
-                            );
                         });
                     });
                 });
