@@ -103,7 +103,6 @@ impl PenguinApp {
             {
                 Some(p) => p,
                 None => {
-                    println!("path empty");
                     empty = true;
                     PathBuf::default()
                 }
@@ -117,11 +116,9 @@ impl PenguinApp {
         }
 
         match fs::exists(&path) {
-            Ok(b) => {
+            Ok(_b) => {
                 match fs::write(&path, &self.file.to_bytes()) {
-                    Ok(_) => {
-                        println!("succeed");
-                    },
+                    Ok(_) => {},
                     Err(_e) => {
                         todo!()
                     }
