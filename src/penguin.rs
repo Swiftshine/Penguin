@@ -91,28 +91,39 @@ impl PenguinApp {
     }
 
     fn try_save(&self, save_as: bool) {
+        let mut empty = false;
+
         let path = if !save_as {
             self.file_path.clone()
         } else {
             match rfd::FileDialog::new()
                 .add_filter("New Super Mario Bros. Wii save file", &["sav"])
+                .set_can_create_directories(true)
                 .save_file()
             {
                 Some(p) => p,
-                None => PathBuf::default()
+                None => {
+                    println!("path empty");
+                    empty = true;
+                    PathBuf::default()
+                }
             }
         };
 
         // save file
 
+        if empty {
+            return;
+        }
+
         match fs::exists(&path) {
             Ok(b) => {
-                if b {
-                    match fs::write(&path, &self.file.to_bytes()) {
-                        Ok(_) => {},
-                        Err(_e) => {
-                            todo!()
-                        }
+                match fs::write(&path, &self.file.to_bytes()) {
+                    Ok(_) => {
+                        println!("succeed");
+                    },
+                    Err(_e) => {
+                        todo!()
                     }
                 }
             }
