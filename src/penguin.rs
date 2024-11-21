@@ -83,6 +83,13 @@ impl PenguinApp {
         }
     }
 
+    fn reopen(&mut self) {
+        match SaveFile::from_path(&self.file_path) {
+            Some(f) => self.file = f,
+            None => {}
+        }
+    }
+
     fn try_save(&self, save_as: bool) {
         let path = if !save_as {
             self.file_path.clone()
@@ -128,18 +135,27 @@ impl eframe::App for PenguinApp {
                 }
                 
                 if ui.add_enabled(self.file_open, Button::new("Save"))
-                    .clicked()
+                .clicked()
                 {
                     self.try_save(false);
                     ui.close_menu();
                 }
                 
                 if ui.add_enabled(self.file_open, Button::new("Save As"))
-                    .clicked()
+                .clicked()
                 {
                     self.try_save(true);
                     ui.close_menu();
                 }
+
+                if ui.add_enabled(self.file_open, Button::new("Refresh"))
+                .on_hover_text("Reloads the save file. This can be used if the file was saved externally.")
+                .clicked() {
+                    self.reopen();
+                    ui.close_menu();
+                }
+
+
             });
 
         });
