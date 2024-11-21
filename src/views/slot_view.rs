@@ -232,14 +232,39 @@ impl SlotView {
                     ui.vertical(|ui|{
                         ui.group(|ui|{
                             egui::ComboBox::from_label("Selected player")
-                            .selected_text(PLAYER_NAMES[self.player_edit_index])
+                            .selected_text(format!("Player {}", self.player_edit_index + 1))
                             .show_ui(ui, |ui|{
                                 for i in 0..PLAYER_COUNT {
                                     ui.selectable_value(
                                         &mut self.player_edit_index,
                                         i,
-                                        PLAYER_NAMES[i]
+                                        format!("Player {}", i + 1)
                                     );
+                                }
+                            });
+
+                            egui::ComboBox::from_label("Character")
+                            .selected_text(
+                                match slot.player_character[self.player_edit_index] {
+                                    PlayerCharacter::Mario => "Mario",
+                                    PlayerCharacter::Luigi => "Luigi",
+                                    PlayerCharacter::BlueToad => "Blue Toad",
+                                    PlayerCharacter::YellowToad => "Yellow Toad"
+                                }
+                            )
+                            .show_ui(ui, |ui|{
+                                for i in 0..PLAYER_COUNT {
+                                    ui.selectable_value(
+                                        &mut slot.player_character[self.player_edit_index],
+                                        match i {
+                                            0 => PlayerCharacter::Mario,
+                                            1 => PlayerCharacter::Luigi,
+                                            2 => PlayerCharacter::BlueToad,
+                                            3 => PlayerCharacter::YellowToad,
+                                            _ => PlayerCharacter::Mario
+                                        },
+                                        PLAYER_NAMES[i]
+                                    ).on_hover_text("Player 1 will always be Mario.");
                                 }
                             });
                         });

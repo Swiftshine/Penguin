@@ -17,7 +17,7 @@ pub enum PlayerPowerup {
 pub const POWERUP_COUNT: usize = 7;
 
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum PlayerCharacter {
     Mario,
     Luigi,
