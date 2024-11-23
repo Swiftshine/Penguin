@@ -1,17 +1,20 @@
 use eframe::{self, egui, NativeOptions};
-use egui::Button;
+use egui::{Button, IconData};
 use std::path::PathBuf;
 use std::env;
 use rfd;
 use std::fs;
 use crate::savefile::SaveFile;
 use crate::settings::*;
+use anyhow::Result;
+use std::sync::Arc;
 
 use crate::views::{
     PenguinView,
     slot_view::*,
     header_view::*,
 };
+
 pub struct PenguinApp {
     file_path: PathBuf,
     settings: PenguinSettings,
@@ -55,9 +58,29 @@ impl PenguinApp {
 
     /// Runs the application
     pub fn run() -> Result<(), eframe::Error> {
+        let mut options = NativeOptions::default();
+
+        options.viewport.icon = Some(
+            Arc::new(
+                IconData {
+                    rgba: {
+                        let icon = include_bytes!("../assets/icon.png");
+                        let image = image::load_from_memory(icon)
+                            .expect("Failed to open icon path")
+                            .into_rgba8();
+
+                        image.into_raw()
+                    },
+                    width: 64,
+                    height: 64
+                }
+            )
+        );
+
+
         eframe::run_native(
             "Penguin",
-            NativeOptions::default(),
+            options,
             Box::new(|_cc| {
                 Ok(Box::<PenguinApp>::from(
                     PenguinApp::new()
