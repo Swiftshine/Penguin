@@ -1,7 +1,5 @@
 # Penguin
-Work-in-progress New Super Mario Bros. Wii save editor.
+New Super Mario Bros. Wii save editor.
 
-## Todo
-- [X] Accurately read files
-- [X] Accurately save files
-- [ ] GUI
+## Special Thanks
+- [The NSMBW Modding Community](https://github.com/NSMBW-Community/) for [NSMBW Save Data Documentation](https://nsmbw-community.github.io/NSMBW-Decomp/docs/classdMj2dHeader__c.html)
