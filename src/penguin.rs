@@ -5,24 +5,24 @@ use std::env;
 use rfd;
 use std::fs;
 use crate::savefile::SaveFile;
-use crate::views::slot_view::SlotView;
-use crate::views::{PenguinView, header_view::*};
+use crate::settings::*;
 
+use crate::views::{
+    PenguinView,
+    slot_view::*,
+    header_view::*,
+};
 pub struct PenguinApp {
     file_path: PathBuf,
-    _settings: PenguinSettings,
+    settings: PenguinSettings,
+    show_settings: bool,
     file: SaveFile,
     file_open: bool,
     current_view: PenguinView,
     header_view: HeaderView,
     current_slot_index: usize,
     slot_view: SlotView,
-}
-
-#[derive(Default)]
-/// The settings that are saved to disk.
-struct PenguinSettings {
-
+    first_frame_update: bool,
 }
 
 fn get_slot_string(index: usize) -> String {
@@ -35,16 +35,22 @@ fn get_slot_string(index: usize) -> String {
 
 impl PenguinApp {
     fn new() -> Self {
-        Self {
+        let mut app = Self {
             file_path: env::current_dir().unwrap(),
-            _settings: Default::default(),
+            settings: PenguinSettings::default(),
+            show_settings: false,
             file: SaveFile::blank(),
             file_open: false,
             current_view: PenguinView::Header,
             header_view: HeaderView::new(),
             current_slot_index: 0,
-            slot_view: SlotView::new()
-        }
+            slot_view: SlotView::new(),
+            first_frame_update: true,
+        };
+
+        let _ = app.settings.load();
+
+        app
     }
 
     /// Runs the application
@@ -132,6 +138,12 @@ impl PenguinApp {
 impl eframe::App for PenguinApp {
     /// Called each time the UI needs to be repainted.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        
+        if self.first_frame_update {
+            self.first_frame_update = false;
+            self.settings.update_theme(ctx);
+        }
+
         egui::TopBottomPanel::top("top_panel")
         .show(ctx, |ui| {
             egui::menu::bar(ui, |ui|{
@@ -161,7 +173,9 @@ impl eframe::App for PenguinApp {
                     ui.close_menu();
                 }
 
-
+                if ui.button("Settings").clicked() {
+                    self.show_settings = !self.show_settings;
+                }
             });
 
         });
@@ -199,7 +213,12 @@ impl eframe::App for PenguinApp {
                         self.slot_view.show_ui(ui, &mut self.file.save_slots[self.current_slot_index]);
                     }
                 }
+            }
 
+            if self.show_settings {
+                egui::Window::new("Settings").show(ui.ctx(), |ui|{
+                    self.settings.show_ui(ui);
+                });
             }
         });
 
