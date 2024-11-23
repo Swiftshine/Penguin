@@ -119,9 +119,7 @@ impl PenguinApp {
             Ok(_b) => {
                 match fs::write(&path, &self.file.to_bytes()) {
                     Ok(_) => {},
-                    Err(_e) => {
-                        todo!()
-                    }
+                    Err(_e) => {}
                 }
             }
 
