@@ -319,25 +319,20 @@ impl SlotView {
                             }
                         });
 
-                        ui.label("Spawn flags");
-                        let labels = [
-                            "Star Power",
-                            "Yoshi",
-                            "Bubbled",
-                            "Toad Rescue"
-                        ];
+                        // omitting the other flags for now since they don't do anything
+                        {
+                            let mut is_checked = (slot.player_spawn_flags[self.player_edit_index] & PlayerCreationFlags::StarPower.bits()) != 0;
 
-                        for i in 0..4 {
-                            let mut is_checked = (slot.player_spawn_flags[self.player_edit_index] & (1 << i)) != 0;
-
-                            if ui.checkbox(&mut is_checked, labels[i]).changed() {
+                            if ui.checkbox(&mut is_checked, "Star Power").changed() {
                                 if is_checked {
-                                    slot.player_spawn_flags[i] |= 1 << i;
+                                    slot.player_spawn_flags[self.player_edit_index] |= PlayerCreationFlags::StarPower.bits();
                                 } else {
-                                    slot.player_spawn_flags[i] &= !(1 << i);
+                                    slot.player_spawn_flags[self.player_edit_index] &= !PlayerCreationFlags::StarPower.bits();
                                 }
                             }
                         }
+
+                        
                     });
                 });
             });
