@@ -198,76 +198,146 @@ impl SlotView {
             
             // player information
             ui.group(|ui|{
-                ui.horizontal(|ui|{
-                    ui.vertical(|ui|{
-                        
-                        egui::ComboBox::from_label("Current world")
-                            .selected_text(format!("World {}", slot.cur_world + 1))
-                            .show_ui(ui, |ui|{
-                                for i in 0..ACTUAL_WORLD_COUNT as u8 {
-                                    ui.selectable_value(
-                                        &mut slot.cur_world,
-                                        i,
-                                    format!("World {}", i + 1)
+                ui.vertical(|ui|{
+                    
+                    egui::ComboBox::from_label("Current world")
+                        .selected_text(format!("World {}", slot.cur_world + 1))
+                        .show_ui(ui, |ui|{
+                            for i in 0..ACTUAL_WORLD_COUNT as u8 {
+                                ui.selectable_value(
+                                    &mut slot.cur_world,
+                                    i,
+                                format!("World {}", i + 1)
+                            );
+                        }
+                    });
+
+                    ui.label("Current subworld")
+                    .on_hover_text("An example of a 'subworld' is the second half of World 3.");
+                    ui.add(
+                        egui::DragValue::new(&mut slot.cur_subworld)
+                        .speed(1)
+                        .range(0..=1)
+                    );
+
+                    ui.label("Current path node");
+                    ui.add(
+                        egui::DragValue::new(&mut slot.cur_path_node)
+                        .speed(1)
+                        .range(0..=std::u8::MAX)
+                    );
+                });
+                // *player* information
+                ui.vertical(|ui|{
+                    ui.group(|ui|{
+                        egui::ComboBox::from_label("Selected player")
+                        .selected_text(format!("Player {}", self.player_edit_index + 1))
+                        .show_ui(ui, |ui|{
+                            for i in 0..PLAYER_COUNT {
+                                ui.selectable_value(
+                                    &mut self.player_edit_index,
+                                    i,
+                                    format!("Player {}", i + 1)
                                 );
                             }
                         });
-    
-                        ui.label("Current subworld")
-                        .on_hover_text("An example of a 'subworld' is the second half of World 3.");
+                        egui::ComboBox::from_label("Character")
+                        .selected_text(
+                            match slot.player_character[self.player_edit_index] {
+                                PlayerCharacter::Mario => "Mario",
+                                PlayerCharacter::Luigi => "Luigi",
+                                PlayerCharacter::BlueToad => "Blue Toad",
+                                PlayerCharacter::YellowToad => "Yellow Toad"
+                            }
+                        )
+                        .show_ui(ui, |ui|{
+                            for i in 0..PLAYER_COUNT {
+                                ui.selectable_value(
+                                    &mut slot.player_character[self.player_edit_index],
+                                    match i {
+                                        0 => PlayerCharacter::Mario,
+                                        1 => PlayerCharacter::Luigi,
+                                        2 => PlayerCharacter::BlueToad,
+                                        3 => PlayerCharacter::YellowToad,
+                                        _ => PlayerCharacter::Mario
+                                    },
+                                    PLAYER_NAMES[i]
+                                ).on_hover_text("Player 1 will always be Mario.");
+                            }
+                        });
+                        ui.label("Continues");
                         ui.add(
-                            egui::DragValue::new(&mut slot.cur_subworld)
-                            .speed(1)
-                            .range(0..=1)
-                        );
-    
-                        ui.label("Current path node");
-                        ui.add(
-                            egui::DragValue::new(&mut slot.cur_path_node)
+                            egui::DragValue::new(&mut slot.player_continues[self.player_edit_index])
                             .speed(1)
                             .range(0..=std::u8::MAX)
                         );
-                    });
 
-                    ui.vertical(|ui|{
-                        ui.group(|ui|{
-                            egui::ComboBox::from_label("Selected player")
-                            .selected_text(format!("Player {}", self.player_edit_index + 1))
-                            .show_ui(ui, |ui|{
-                                for i in 0..PLAYER_COUNT {
-                                    ui.selectable_value(
-                                        &mut self.player_edit_index,
-                                        i,
-                                        format!("Player {}", i + 1)
-                                    );
-                                }
-                            });
+                        ui.label("Coins")
+                        .on_hover_text("These numbers add up to the coin count seen on-screen.");
+                        ui.add(
+                            egui::DragValue::new(&mut slot.player_coins[self.player_edit_index])
+                            .speed(1)
+                            .range(0..=std::u8::MAX)
+                        );
 
-                            egui::ComboBox::from_label("Character")
-                            .selected_text(
-                                match slot.player_character[self.player_edit_index] {
-                                    PlayerCharacter::Mario => "Mario",
-                                    PlayerCharacter::Luigi => "Luigi",
-                                    PlayerCharacter::BlueToad => "Blue Toad",
-                                    PlayerCharacter::YellowToad => "Yellow Toad"
-                                }
-                            )
-                            .show_ui(ui, |ui|{
-                                for i in 0..PLAYER_COUNT {
-                                    ui.selectable_value(
-                                        &mut slot.player_character[self.player_edit_index],
-                                        match i {
-                                            0 => PlayerCharacter::Mario,
-                                            1 => PlayerCharacter::Luigi,
-                                            2 => PlayerCharacter::BlueToad,
-                                            3 => PlayerCharacter::YellowToad,
-                                            _ => PlayerCharacter::Mario
-                                        },
-                                        PLAYER_NAMES[i]
-                                    ).on_hover_text("Player 1 will always be Mario.");
-                                }
-                            });
+                        ui.label("Lives");
+                        ui.add(
+                            egui::DragValue::new(&mut slot.player_lives[self.player_edit_index])
+                            .speed(1)
+                            .range(0..=PLAYER_LIFE_MAX)
+                        );
+
+                        egui::ComboBox::from_label("Powerup")
+                        .selected_text(
+                            match slot.player_powerup[self.player_edit_index] {
+                                PlayerPowerup::None => "None",
+                                PlayerPowerup::Mushroom => "Mushroom",
+                                PlayerPowerup::FireFlower => "Fire Flower",
+                                PlayerPowerup::MiniMushroom => "Mini Mushroom",
+                                PlayerPowerup::PropellerMushroom => "Propeller Mushroom",
+                                PlayerPowerup::PenguinSuit => "Penguin Suit",
+                                PlayerPowerup::IceFlower => "Ice Flower",
+                            }
+                        ).show_ui(ui, |ui|{
+                            for i in 0..7 {
+                                let val = match i {
+                                    0 => PlayerPowerup::None,
+                                    1 => PlayerPowerup::Mushroom,
+                                    2 => PlayerPowerup::FireFlower,
+                                    3 => PlayerPowerup::MiniMushroom,
+                                    4 => PlayerPowerup::PropellerMushroom,
+                                    5 => PlayerPowerup::PenguinSuit,
+                                    6 => PlayerPowerup::IceFlower,
+                                    _ => PlayerPowerup::None                                    
+                                };
+
+                                ui.selectable_value(
+                                    &mut slot.player_powerup[self.player_edit_index],
+                                    val,
+                                    POWERUP_NAMES_2[i]
+                                );
+                            }
                         });
+
+                        ui.label("Spawn flags");
+                        let labels = [
+                            "Star Power",
+                            "Yoshi",
+                            "Bubbled",
+                            "Toad Rescue"
+                        ];
+
+                        for i in 0..4 {
+                            let mut is_checked = (slot.player_spawn_flags[self.player_edit_index] & (1 << i)) != 0;
+
+                            if ui.checkbox(&mut is_checked, labels[i]).changed() {
+                                if is_checked {
+                                    slot.player_spawn_flags[i] |= 1 << i;
+                                } else {
+                                    slot.player_spawn_flags[i] &= !(1 << i);
+                                }
+                            }
+                        }
                     });
                 });
             });

@@ -3,7 +3,7 @@ use bitflags::bitflags;
 pub const HEADER_SIZE: usize = 0x6A0;
 pub const MAX_SCORE: u32 = 99999950;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum PlayerPowerup {
     None,
     Mushroom,
@@ -164,8 +164,19 @@ pub const POWERUP_NAMES: [&str; 7] = [
     "Ice Flower",
     "Star"
 ];
+    
+pub const POWERUP_NAMES_2: [&str; 7] = [
+    "None",
+    "Mushroom",
+    "Fire Flower",
+    "Mini Mushroom",
+    "Propeller Mushroom",
+    "Penguin Suit",
+    "Ice Flower",
+];
 
 pub const POWERUP_STOCK_MAX: u8 = 99;
+pub const PLAYER_LIFE_MAX: u8 = 99;
 
 pub const PLAYER_NAMES: [&str; 4] = [
     "Mario", "Luigi", "Blue Toad", "Yellow Toad"
