@@ -80,11 +80,21 @@ bitflags!{
     
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct PlayerCreationFlags: u8 {
-        const None = 0;
         const StarPower  = 0b00000001;
         const Yoshi      = 0b00000010;
         const Bubble     = 0b00000100;
         const RescueToad = 0b00001000;
+    }
+    
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    pub struct StageCompletionFlags: u32 {
+        const StarCoin1 = 0x1;
+        const StarCoin2 = 0x2;
+        const StarCoin3 = 0x4;
+        const GoalNormal = 0x10;
+        const GoalSecret = 0x20;
+        const SuperGuideGoalNormal = 0x80;
+        const SuperGuideGoalSecret = 0x100;
     }
 }
 

@@ -184,7 +184,7 @@ impl eframe::App for PenguinApp {
                 
                 match self.current_view {
                     PenguinView::Header => {
-                        self.header_view.ui(ui, &mut self.file.header);
+                        self.header_view.show_ui(ui, &mut self.file.header);
                     }
         
                     PenguinView::SaveSlot => {
@@ -198,7 +198,7 @@ impl eframe::App for PenguinApp {
                                 }
                             });
                             
-                        self.slot_view.ui(ui, &mut self.file.save_slots[self.current_slot_index]);
+                        self.slot_view.show_ui(ui, &mut self.file.save_slots[self.current_slot_index]);
                     }
                 }
 
