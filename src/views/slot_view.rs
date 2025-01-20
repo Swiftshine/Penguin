@@ -136,7 +136,7 @@ impl SlotView {
                             .speed(1)
                             .range(0..=POWERUP_STOCK_MAX)          
                         );
-                        ui.label(POWERUP_NAMES[i]);
+                        ui.label(INGAME_POWERUP_NAMES[i]);
                     });
                 }
                 
@@ -386,7 +386,7 @@ impl SlotView {
                             ui.selectable_value(
                                 &mut slot.player_powerup[self.player_edit_index],
                                 val,
-                                POWERUP_NAMES_2[i]
+                                PLAYER_POWERUP_STATUS[i]
                             );
                         }
                     });

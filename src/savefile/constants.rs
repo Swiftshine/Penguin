@@ -165,17 +165,18 @@ pub const HINT_MOVIE_TITLES: [&str; ACTUAL_HINT_MOVIE_COUNT] = [
     "9-7: Super Skills",
 ];
 
-pub const POWERUP_NAMES: [&str; 7] = [
+// the powerup names used in the items menu on the world map
+pub const INGAME_POWERUP_NAMES: [&str; 7] = [
     "Mushroom",
     "Fire Flower",
-    "Mini Mushroom",
     "Propeller Mushroom",
-    "Penguin Suit",
     "Ice Flower",
+    "Penguin Suit",
+    "Mini Mushroom",
     "Star"
 ];
-    
-pub const POWERUP_NAMES_2: [&str; 7] = [
+
+pub const PLAYER_POWERUP_STATUS: [&str; 7] = [
     "None",
     "Mushroom",
     "Fire Flower",
