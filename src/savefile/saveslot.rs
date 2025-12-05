@@ -232,11 +232,8 @@ impl SaveSlot {
         out[6] = self.w5_vine_reshuffle_counter;
         out[7] = if self.w3_switch_on { 1 } else { 0 };
 
-        for i in 0..POWERUP_COUNT {
-            out[9 + i] = self.item_stock[i];
-        }
+        out[9..(POWERUP_COUNT + 9)].copy_from_slice(&self.item_stock[..POWERUP_COUNT]);
 
-        
         for i in 0..PLAYER_COUNT {
             out[0x1A + i] = self.player_continues[i];
             out[0x1E + i] = self.player_coins[i];

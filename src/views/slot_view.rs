@@ -71,10 +71,10 @@ impl SlotView {
                         "Super Guide triggered"  
                     ];
         
-                    for i in 0..7 {
+                    for (i, label) in labels.iter().enumerate() {
                         let mut is_checked = (slot.game_completion_flags & (1 << i)) != 0;
         
-                        if ui.checkbox(&mut is_checked, labels[i]).changed() {
+                        if ui.checkbox(&mut is_checked, *label).changed() {
                             if is_checked {
                                 slot.game_completion_flags |= 1 << i;
                             } else {
@@ -94,11 +94,8 @@ impl SlotView {
                 ui.vertical(|ui|{
                     ui.label("Hint movie bought");
                     egui::ScrollArea::vertical().show(ui, |ui|{
-                        for i in 0..ACTUAL_HINT_MOVIE_COUNT {
-                            ui.checkbox(
-                                &mut slot.hint_movie_bought[i],
-                                HINT_MOVIE_TITLES[i]
-                            );
+                        for (i, title) in HINT_MOVIE_TITLES.iter().enumerate().take(ACTUAL_HINT_MOVIE_COUNT) {
+                            ui.checkbox(&mut slot.hint_movie_bought[i], *title);
                         }
                     });
                 });
@@ -123,25 +120,24 @@ impl SlotView {
                         ui.add(
                             egui::DragValue::new(&mut slot.staff_credits_high_score)
                             .speed(1)
-                            .range(0..=std::u16::MAX)
+                            .range(0..=u16::MAX)
                         );
                     });
                 });
                 ui.add_space(3.0);
 
                 ui.label("Item stock");
-                for i in 0..7 {
+                for (i, item_name) in ITEM_MENU_POWERUP_NAMES.iter().enumerate() {
                     ui.horizontal(|ui|{
                         ui.add(
                             egui::DragValue::new(&mut slot.item_stock[i])
                             .speed(1)
                             .range(0..=POWERUP_STOCK_MAX)          
                         );
-                        ui.label(ITEM_MENU_POWERUP_NAMES[i]);
+                        ui.label(*item_name);
                     });
-                }
-                
-                
+
+                }                
             });
             
             ui.separator();
@@ -293,7 +289,7 @@ impl SlotView {
                 ui.add(
                     egui::DragValue::new(&mut slot.cur_path_node)
                     .speed(1)
-                    .range(0..=std::u8::MAX)
+                    .range(0..=u8::MAX)
                 );
                 // *player* information
 
@@ -319,7 +315,7 @@ impl SlotView {
                         }
                     )
                     .show_ui(ui, |ui|{
-                        for i in 0..PLAYER_COUNT {
+                        for (i, name) in PLAYER_NAMES.iter().enumerate() {
                             ui.selectable_value(
                                 &mut slot.player_character[self.player_edit_index],
                                 match i {
@@ -329,7 +325,7 @@ impl SlotView {
                                     3 => PlayerCharacter::YellowToad,
                                     _ => PlayerCharacter::Mario
                                 },
-                                PLAYER_NAMES[i]
+                                *name
                             ).on_hover_text("Player 1 will always be Mario.");
                         }
                     });
@@ -339,7 +335,7 @@ impl SlotView {
                             ui.add(
                                 egui::DragValue::new(&mut slot.player_continues[self.player_edit_index])
                                 .speed(1)
-                                .range(0..=std::u8::MAX)
+                                .range(0..=u8::MAX)
                             );
                         });
                         ui.vertical(|ui|{
@@ -348,7 +344,7 @@ impl SlotView {
                         ui.add(
                                 egui::DragValue::new(&mut slot.player_coins[self.player_edit_index])
                                 .speed(1)
-                                .range(0..=std::u8::MAX)
+                                .range(0..=u8::MAX)
                             );
                         });
                         ui.vertical(|ui|{
@@ -373,7 +369,7 @@ impl SlotView {
                             PlayerPowerup::IceFlower => "Ice Flower",
                         }
                     ).show_ui(ui, |ui|{
-                        for i in 0..7 {
+                        for (i, status) in PLAYER_POWERUP_STATUS.iter().enumerate() {
                             let val = match i {
                                 0 => PlayerPowerup::None,
                                 1 => PlayerPowerup::Mushroom,
@@ -387,10 +383,12 @@ impl SlotView {
                             ui.selectable_value(
                                 &mut slot.player_powerup[self.player_edit_index],
                                 val,
-                                PLAYER_POWERUP_STATUS[i]
+                                *status
                             );
+
                         }
                     });
+                    
                     // omitting the other flags for now since they don't do anything
                     {
                         let mut is_checked = (slot.player_spawn_flags[self.player_edit_index] & PlayerCreationFlags::StarPower.bits()) != 0;

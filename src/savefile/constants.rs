@@ -32,6 +32,7 @@ pub const STAGE_COUNT: usize = 42;
 pub const WORLD_COUNT: usize = 10;
 pub const ACTUAL_WORLD_COUNT: usize = 9;
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(PartialEq)]
 pub enum SaveFileRegion {
     NTSC,

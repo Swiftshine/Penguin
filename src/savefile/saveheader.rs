@@ -43,22 +43,21 @@ impl SaveHeader {
 
         let mut offs = 0x8;
 
-        for i in 0..WORLD_COUNT {
-            for j in 0..STAGE_COUNT {
-                free_mode_play_count[i][j] = BigEndian::read_u16(&input[offs..offs + 2]);
+        for counts in free_mode_play_count.iter_mut().take(WORLD_COUNT) {
+            for count in counts.iter_mut().take(STAGE_COUNT) {
+                *count = BigEndian::read_u16(&input[offs..offs + 2]);
                 offs += 2;
             }
         }
 
         let mut coin_battle_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT] = [[0; STAGE_COUNT]; WORLD_COUNT];
 
-        for i in 0..WORLD_COUNT {
-            for j in 0..STAGE_COUNT {
-                coin_battle_play_count[i][j] = BigEndian::read_u16(&input[offs..offs + 2]);
+        for counts in coin_battle_play_count.iter_mut().take(WORLD_COUNT) {
+            for count in counts.iter_mut().take(STAGE_COUNT) {
+                *count = BigEndian::read_u16(&input[offs..offs + 2]);
                 offs += 2;
             }
         }
-
 
         let extra_modes_unlocked_worlds = BigEndian::read_u16(&input[0x698..0x69A]);
 
@@ -96,25 +95,17 @@ impl SaveHeader {
         let mut offs = 8;
 
         // play count of each level in free for all/free mode
-        for i in 0..WORLD_COUNT {
-            for j in 0..STAGE_COUNT {
-                BigEndian::write_u16(
-                    &mut out[offs..offs + 2],
-                    self.free_mode_play_count[i][j]
-                );
-
+        for counts in self.free_mode_play_count.iter().take(WORLD_COUNT) {
+            for count in counts.iter().take(STAGE_COUNT) {
+                BigEndian::write_u16(&mut out[offs..offs + 2], *count);
                 offs += 2;
             }
         }
 
         // play count of each level in coin battle
-        for i in 0..WORLD_COUNT {
-            for j in 0..STAGE_COUNT {
-                BigEndian::write_u16(
-                    &mut out[offs..offs + 2],
-                    self.coin_battle_play_count[i][j]
-                );
-
+        for counts in self.coin_battle_play_count.iter().take(WORLD_COUNT) {
+            for count in counts.iter().take(STAGE_COUNT) {
+                BigEndian::write_u16(&mut out[offs..offs + 2], *count);
                 offs += 2;
             }
         }
