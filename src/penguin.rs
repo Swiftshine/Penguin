@@ -77,6 +77,8 @@ impl PenguinApp {
             )
         );
 
+        options.centered = true;
+        options.viewport.inner_size = Some(egui::vec2(1024.0, 600.0));
 
         eframe::run_native(
             "Penguin",
