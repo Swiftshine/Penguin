@@ -2,7 +2,6 @@ use eframe::{self, egui, NativeOptions};
 use egui::{Button, IconData};
 use std::path::PathBuf;
 use std::env;
-use rfd;
 use std::fs;
 use crate::savefile::SaveFile;
 use crate::settings::*;
@@ -96,29 +95,18 @@ impl PenguinApp {
             .add_filter("New Super Mario Bros. Wii save file", &["sav"])
             .pick_file();
         
-        match path {
-            Some(p) => {
-                self.file_path = p;
+        if let Some(p) = path {
+            self.file_path = p;
 
-                match SaveFile::from_path(&self.file_path) {
-                    Some(f) => {
-                        self.file_open = true;
-                        self.file = f;
-                    },
-                    
-                    None => {}
-                }
+            if let Some(f) = SaveFile::from_path(&self.file_path) {
+                self.file_open = true;
+                self.file = f;
             }
-
-            None => {}
         }
     }
 
     fn reopen(&mut self) {
-        match SaveFile::from_path(&self.file_path) {
-            Some(f) => self.file = f,
-            None => {}
-        }
+        if let Some(f) = SaveFile::from_path(&self.file_path) { self.file = f }
     }
 
     fn try_save(&self, save_as: bool) {
@@ -148,7 +136,7 @@ impl PenguinApp {
 
         match fs::exists(&path) {
             Ok(_b) => {
-                match fs::write(&path, &self.file.to_bytes()) {
+                match fs::write(&path, self.file.to_bytes()) {
                     Ok(_) => {},
                     Err(_e) => {}
                 }

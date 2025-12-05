@@ -212,7 +212,7 @@ impl SlotView {
                         ui.selectable_value(
                             &mut slot.toad_rescue_level[self.world_edit_index],
                             i as u8,
-                            get_stage_name_string(i as usize)
+                            get_stage_name_string(i)
                         ).on_hover_text(
                             "After rescuing a toad from a level, the game will set this stage index to one that is normally inaccessible."
                         );
