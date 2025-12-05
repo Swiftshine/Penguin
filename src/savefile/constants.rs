@@ -166,7 +166,7 @@ pub const HINT_MOVIE_TITLES: [&str; ACTUAL_HINT_MOVIE_COUNT] = [
 ];
 
 // the powerup names used in the items menu on the world map
-pub const INGAME_POWERUP_NAMES: [&str; 7] = [
+pub const ITEM_MENU_POWERUP_NAMES: [&str; 7] = [
     "Mushroom",
     "Fire Flower",
     "Propeller Mushroom",

@@ -137,7 +137,7 @@ impl SlotView {
                             .speed(1)
                             .range(0..=POWERUP_STOCK_MAX)          
                         );
-                        ui.label(INGAME_POWERUP_NAMES[i]);
+                        ui.label(ITEM_MENU_POWERUP_NAMES[i]);
                     });
                 }
                 
