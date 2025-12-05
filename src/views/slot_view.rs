@@ -55,6 +55,7 @@ impl SlotView {
         // game completion, world state
         ui.add_space(3.0);
         ui.horizontal_centered(|ui|{
+            egui::ScrollArea::horizontal().show(ui, |ui|{
             // game completion
             ui.horizontal_centered(|ui| {
                 ui.vertical(|ui| {
@@ -403,6 +404,7 @@ impl SlotView {
                     }
                 });
             });
+        });
         });
     }
 }
