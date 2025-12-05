@@ -1,18 +1,14 @@
-use eframe::{self, egui, NativeOptions};
-use egui::{Button, IconData};
-use std::path::PathBuf;
-use std::env;
-use std::fs;
 use crate::savefile::SaveFile;
 use crate::settings::*;
 use anyhow::Result;
+use eframe::{self, egui, NativeOptions};
+use egui::{Button, IconData};
+use std::env;
+use std::fs;
+use std::path::PathBuf;
 use std::sync::Arc;
 
-use crate::views::{
-    PenguinView,
-    slot_view::*,
-    header_view::*,
-};
+use crate::views::{header_view::*, slot_view::*, PenguinView};
 
 pub struct PenguinApp {
     file_path: PathBuf,
@@ -31,7 +27,7 @@ fn get_slot_string(index: usize) -> String {
     match index {
         0..=2 => String::from("Save Slot ") + &format!("{}", index + 1),
         3..=5 => String::from("Quick Slot ") + &format!("{}", index - 2),
-        _ => String::from("error")
+        _ => String::from("error"),
     }
 }
 
@@ -59,22 +55,18 @@ impl PenguinApp {
     pub fn run() -> Result<(), eframe::Error> {
         let mut options = NativeOptions::default();
 
-        options.viewport.icon = Some(
-            Arc::new(
-                IconData {
-                    rgba: {
-                        let icon = include_bytes!("../assets/icon.png");
-                        let image = image::load_from_memory(icon)
-                            .expect("Failed to open icon path")
-                            .into_rgba8();
+        options.viewport.icon = Some(Arc::new(IconData {
+            rgba: {
+                let icon = include_bytes!("../assets/icon.png");
+                let image = image::load_from_memory(icon)
+                    .expect("Failed to open icon path")
+                    .into_rgba8();
 
-                        image.into_raw()
-                    },
-                    width: 64,
-                    height: 64
-                }
-            )
-        );
+                image.into_raw()
+            },
+            width: 64,
+            height: 64,
+        }));
 
         options.centered = true;
         options.viewport.inner_size = Some(egui::vec2(1024.0, 600.0));
@@ -82,11 +74,7 @@ impl PenguinApp {
         eframe::run_native(
             "Penguin",
             options,
-            Box::new(|_cc| {
-                Ok(Box::<PenguinApp>::from(
-                    PenguinApp::new()
-                ))
-            })
+            Box::new(|_cc| Ok(Box::<PenguinApp>::from(PenguinApp::new()))),
         )
     }
 
@@ -94,7 +82,7 @@ impl PenguinApp {
         let path = rfd::FileDialog::new()
             .add_filter("New Super Mario Bros. Wii save file", &["sav"])
             .pick_file();
-        
+
         if let Some(p) = path {
             self.file_path = p;
 
@@ -106,7 +94,9 @@ impl PenguinApp {
     }
 
     fn reopen(&mut self) {
-        if let Some(f) = SaveFile::from_path(&self.file_path) { self.file = f }
+        if let Some(f) = SaveFile::from_path(&self.file_path) {
+            self.file = f
+        }
     }
 
     fn try_save(&self, save_as: bool) {
@@ -135,53 +125,54 @@ impl PenguinApp {
         }
 
         match fs::exists(&path) {
-            Ok(_b) => {
-                match fs::write(&path, self.file.to_bytes()) {
-                    Ok(_) => {},
-                    Err(_e) => {}
-                }
-            }
+            Ok(_b) => match fs::write(&path, self.file.to_bytes()) {
+                Ok(_) => {}
+                Err(_e) => {}
+            },
 
             Err(_e) => {}
         }
-
     }
 }
 
 impl eframe::App for PenguinApp {
     /// Called each time the UI needs to be repainted.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        
         if self.first_frame_update {
             self.first_frame_update = false;
             self.settings.update_theme(ctx);
         }
 
-        egui::TopBottomPanel::top("top_panel")
-        .show(ctx, |ui| {
-            egui::menu::bar(ui, |ui|{
+        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+            egui::menu::bar(ui, |ui| {
                 if ui.button("Open").clicked() {
                     self.try_open();
                     ui.close_menu();
                 }
-                
-                if ui.add_enabled(self.file_open, Button::new("Save"))
-                .clicked()
+
+                if ui
+                    .add_enabled(self.file_open, Button::new("Save"))
+                    .clicked()
                 {
                     self.try_save(false);
                     ui.close_menu();
                 }
-                
-                if ui.add_enabled(self.file_open, Button::new("Save As"))
-                .clicked()
+
+                if ui
+                    .add_enabled(self.file_open, Button::new("Save As"))
+                    .clicked()
                 {
                     self.try_save(true);
                     ui.close_menu();
                 }
 
-                if ui.add_enabled(self.file_open, Button::new("Refresh"))
-                .on_hover_text("Reloads the save file. This can be used if the file was saved externally.")
-                .clicked() {
+                if ui
+                    .add_enabled(self.file_open, Button::new("Refresh"))
+                    .on_hover_text(
+                        "Reloads the save file. This can be used if the file was saved externally.",
+                    )
+                    .clicked()
+                {
                     self.reopen();
                     ui.close_menu();
                 }
@@ -190,51 +181,54 @@ impl eframe::App for PenguinApp {
                     self.show_settings = !self.show_settings;
                 }
             });
-
         });
-
 
         egui::CentralPanel::default().show(ctx, |ui| {
             if !self.file_open {
-                ui.centered_and_justified(|ui|{
+                ui.centered_and_justified(|ui| {
                     ui.label("Open a file.");
                 });
             } else {
-                ui.horizontal(|ui|{
+                ui.horizontal(|ui| {
                     ui.selectable_value(&mut self.current_view, PenguinView::Header, "Header");
-                    ui.selectable_value(&mut self.current_view, PenguinView::SaveSlot, "Save Slots");
+                    ui.selectable_value(
+                        &mut self.current_view,
+                        PenguinView::SaveSlot,
+                        "Save Slots",
+                    );
                 });
 
                 ui.separator();
-                
+
                 match self.current_view {
                     PenguinView::Header => {
                         self.header_view.show_ui(ui, &mut self.file.header);
                     }
-        
+
                     PenguinView::SaveSlot => {
                         egui::ComboBox::from_label("Selected slot")
-                            .selected_text(
-                                get_slot_string(self.current_slot_index)   
-                            )
-                            .show_ui(ui, |ui|{
+                            .selected_text(get_slot_string(self.current_slot_index))
+                            .show_ui(ui, |ui| {
                                 for i in 0..=5 {
-                                    ui.selectable_value(&mut self.current_slot_index, i, get_slot_string(i));
+                                    ui.selectable_value(
+                                        &mut self.current_slot_index,
+                                        i,
+                                        get_slot_string(i),
+                                    );
                                 }
                             });
-                            
-                        self.slot_view.show_ui(ui, &mut self.file.save_slots[self.current_slot_index]);
+
+                        self.slot_view
+                            .show_ui(ui, &mut self.file.save_slots[self.current_slot_index]);
                     }
                 }
             }
 
             if self.show_settings {
-                egui::Window::new("Settings").show(ui.ctx(), |ui|{
+                egui::Window::new("Settings").show(ui.ctx(), |ui| {
                     self.settings.show_ui(ui);
                 });
             }
         });
-
     }
-
 }

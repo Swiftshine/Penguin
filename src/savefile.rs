@@ -1,10 +1,9 @@
-use std::path::PathBuf;
 use std::fs;
+use std::path::PathBuf;
 
-
+pub mod constants;
 pub mod saveheader;
 pub mod saveslot;
-pub mod constants;
 use saveheader::SaveHeader;
 use saveslot::SaveSlot;
 
@@ -23,11 +22,10 @@ impl SaveFile {
                 SaveSlot::blank(),
                 SaveSlot::blank(),
                 SaveSlot::blank(),
-                SaveSlot::blank()
-            ]
+                SaveSlot::blank(),
+            ],
         }
     }
-
 
     pub fn from_path(path: &PathBuf) -> Option<Self> {
         let bytes = match fs::read(path) {
@@ -55,10 +53,7 @@ impl SaveFile {
             SaveSlot::from_bytes(&bytes, 5),
         ];
 
-        Some(Self {
-            header,
-            save_slots
-        })
+        Some(Self { header, save_slots })
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {

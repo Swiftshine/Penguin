@@ -16,7 +16,6 @@ pub enum PlayerPowerup {
 
 pub const POWERUP_COUNT: usize = 7;
 
-
 #[derive(Copy, Clone, PartialEq)]
 pub enum PlayerCharacter {
     Mario,
@@ -26,7 +25,6 @@ pub enum PlayerCharacter {
 }
 
 pub const PLAYER_COUNT: usize = 4;
-
 
 pub const STAGE_COUNT: usize = 42;
 pub const WORLD_COUNT: usize = 10;
@@ -40,7 +38,7 @@ pub enum SaveFileRegion {
     JPN,
     KOR,
     CHN,
-    TW
+    TW,
 }
 
 pub const AMBUSH_ENEMY_COUNT: usize = 4;
@@ -62,12 +60,12 @@ pub enum StartingMushroomKind {
 
 #[derive(Copy, Clone)]
 pub enum EnemyDirection {
-    ToNextNode, // "forwards" to the next node
+    ToNextNode,     // "forwards" to the next node
     ToPreviousNode, // "backwards" to the previous node
     FirstTimeValue, // the initial value that was set prior to entering the world for the first time
 }
 
-bitflags!{
+bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct GameCompletionFlags: u8 {
         const SaveEmpty           = 0b00000001;
@@ -78,7 +76,7 @@ bitflags!{
         const GameCompleted       = 0b00100000;
         const SuperGuideTriggered = 0b01000000;
     }
-    
+
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct PlayerCreationFlags: u8 {
         const StarPower  = 0b00000001;
@@ -86,7 +84,7 @@ bitflags!{
         const Bubble     = 0b00000100;
         const RescueToad = 0b00001000;
     }
-    
+
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct StageCompletionFlags: u32 {
         const StarCoin1 = 0x1;
@@ -174,7 +172,7 @@ pub const ITEM_MENU_POWERUP_NAMES: [&str; 7] = [
     "Ice Flower",
     "Penguin Suit",
     "Mini Mushroom",
-    "Star"
+    "Star",
 ];
 
 pub const PLAYER_POWERUP_STATUS: [&str; 7] = [
@@ -190,6 +188,4 @@ pub const PLAYER_POWERUP_STATUS: [&str; 7] = [
 pub const POWERUP_STOCK_MAX: u8 = 99;
 pub const PLAYER_LIFE_MAX: u8 = 99;
 
-pub const PLAYER_NAMES: [&str; 4] = [
-    "Mario", "Luigi", "Blue Toad", "Yellow Toad"
-];
+pub const PLAYER_NAMES: [&str; 4] = ["Mario", "Luigi", "Blue Toad", "Yellow Toad"];

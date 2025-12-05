@@ -1,9 +1,6 @@
 use eframe::egui;
 
-use crate::savefile::{
-    constants::*,
-    saveslot::SaveSlot
-};
+use crate::savefile::{constants::*, saveslot::SaveSlot};
 
 pub struct SlotView {
     world_edit_index: usize,
@@ -20,7 +17,8 @@ fn get_house_type_string(house_type: StartingMushroomKind) -> String {
         StartingMushroomKind::StarRescue => "Star (Rescue)",
         StartingMushroomKind::ItemRescue => "Item (Rescue)",
         StartingMushroomKind::OneUpRescue => "1-Up (Rescue)",
-    }.to_string()
+    }
+    .to_string()
 }
 
 fn get_stage_name_string(stage_index: usize) -> String {
@@ -47,7 +45,7 @@ impl SlotView {
         Self {
             world_edit_index: 0,
             stage_edit_index: 0,
-            player_edit_index: 0
+            player_edit_index: 0,
         }
     }
 

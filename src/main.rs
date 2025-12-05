@@ -2,8 +2,8 @@
 
 mod penguin;
 mod savefile;
-mod views;
 mod settings;
+mod views;
 
 use penguin::PenguinApp;
 

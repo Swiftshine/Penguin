@@ -6,4 +6,3 @@ pub enum PenguinView {
     Header,
     SaveSlot,
 }
-

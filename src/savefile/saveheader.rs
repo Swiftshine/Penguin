@@ -1,4 +1,4 @@
-use byteorder::{ByteOrder, BigEndian};
+use byteorder::{BigEndian, ByteOrder};
 use crc32fast as crc32;
 
 use crate::savefile::constants::*;
@@ -18,7 +18,7 @@ impl SaveHeader {
             last_selected_index: 0,
             free_mode_play_count: [[0; STAGE_COUNT]; WORLD_COUNT],
             coin_battle_play_count: [[0; STAGE_COUNT]; WORLD_COUNT],
-            extra_modes_unlocked_worlds: 0
+            extra_modes_unlocked_worlds: 0,
         }
     }
 
@@ -39,7 +39,8 @@ impl SaveHeader {
 
         let last_selected_index = input[0x6];
 
-        let mut free_mode_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT] = [[0; STAGE_COUNT]; WORLD_COUNT];
+        let mut free_mode_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT] =
+            [[0; STAGE_COUNT]; WORLD_COUNT];
 
         let mut offs = 0x8;
 
@@ -50,7 +51,8 @@ impl SaveHeader {
             }
         }
 
-        let mut coin_battle_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT] = [[0; STAGE_COUNT]; WORLD_COUNT];
+        let mut coin_battle_play_count: [[u16; STAGE_COUNT]; WORLD_COUNT] =
+            [[0; STAGE_COUNT]; WORLD_COUNT];
 
         for counts in coin_battle_play_count.iter_mut().take(WORLD_COUNT) {
             for count in counts.iter_mut().take(STAGE_COUNT) {
@@ -72,18 +74,18 @@ impl SaveHeader {
 
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut out = [0u8; HEADER_SIZE];
-        
+
         // magic
         out[0] = b'S';
         out[1] = b'M';
         out[2] = b'N';
         out[3] = match self.region {
             SaveFileRegion::NTSC => b'E',
-            SaveFileRegion::PAL  => b'P',
-            SaveFileRegion::JPN  => b'J',
-            SaveFileRegion::KOR  => b'K',
-            SaveFileRegion::CHN  => b'C',
-            SaveFileRegion::TW   => b'W'
+            SaveFileRegion::PAL => b'P',
+            SaveFileRegion::JPN => b'J',
+            SaveFileRegion::KOR => b'K',
+            SaveFileRegion::CHN => b'C',
+            SaveFileRegion::TW => b'W',
         };
 
         // version - 0x0E00.
@@ -111,18 +113,12 @@ impl SaveHeader {
         }
 
         // unlocked worlds flags
-        BigEndian::write_u16(
-            &mut out[0x698..0x69A],
-            self.extra_modes_unlocked_worlds
-        );
+        BigEndian::write_u16(&mut out[0x698..0x69A], self.extra_modes_unlocked_worlds);
 
         // crc32 is calculated excluding the magic
         let crc = crc32::hash(&out[4..0x69C]);
 
-        BigEndian::write_u32(
-            &mut out[0x69C..0x6A0],
-            crc
-        );
+        BigEndian::write_u32(&mut out[0x69C..0x6A0], crc);
 
         out.to_vec()
     }
